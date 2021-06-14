@@ -1,0 +1,12 @@
+image: rust:1.52
+
+cache:
+  paths:
+    - target/*
+
+build:
+  stage: build
+  script:
+    - cargo build
+
+# vim: ts=2 sts=2 sw=2 expandtab
