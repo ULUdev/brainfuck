@@ -82,7 +82,7 @@ pub mod interpreter {
                 }
                 '[' => {
                     while new_state.get_current() != 0 {
-                        new_state = execute_statements(&new_statements, &new_state);
+                        new_state = execute_statements(&new_statements[1..].to_vec(), &new_state);
                     }
                 }
                 ']' => {
