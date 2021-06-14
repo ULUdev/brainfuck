@@ -13,7 +13,10 @@ fn main() -> Result<(), Error> {
 	
 	// checking the arguments provided
     let mut args: Vec<String> = std::env::args().collect();
-	for arg in &args {
+    if args.len() < 2 {
+        return Ok(());
+    }
+	for arg in &args[1..].to_vec() {
 		match arg.as_str() {
 			"-d" | "--debug" => {
 				debug = true;
