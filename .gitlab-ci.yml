@@ -9,4 +9,9 @@ build:
   script:
     - cargo build
 
+test:
+  stage: test
+  script:
+    - cargo run
+
 # vim: ts=2 sts=2 sw=2 expandtab
