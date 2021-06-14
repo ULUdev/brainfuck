@@ -96,4 +96,15 @@ pub mod interpreter {
         new_state
     }
 }
+
+pub mod cmd {
+    pub const HELP: &str = "
+        brainfuck [options] <file>
+        run brainfuck code
+
+        options:
+        -d, --debug: enable debugging output after running the programm
+        -h, --help: show this help message
+    ";
+}
 // vim: ts=4 sts=4 sw=4 expandtab
