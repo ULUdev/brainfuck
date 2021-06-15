@@ -1,4 +1,24 @@
+// some general help stuff
+pub mod help {
+    pub fn match_closing_paren(string: String, open_pos: usize) -> Option<usize> {
+        let chars: Vec<char> = string.chars().collect();
+        let mut counter: i32 = 1;
+        let mut pos: usize = open_pos;
+        while counter > 0 {
+            pos += 1;
+            match chars[pos] {
+                '[' => counter += 1,
+                ']' => counter -= 1,
+                _ => {}
+            }
+        }
+        Some(pos)
+    }
+}
+
 pub mod interpreter {
+    pub use crate::brainfuck::help::match_closing_paren;
+
     #[derive(Debug, Clone)]
     pub struct ProgramState {
         mem: Vec<u8>,
@@ -81,9 +101,24 @@ pub mod interpreter {
                     new_state.read_to_ptr();
                 }
                 '[' => {
-                    while new_state.get_current() != 0 {
-                        new_state = execute_statements(&new_statements[1..].to_vec(), &new_state);
+                    let statement_string: String = new_statements.clone().into_iter().collect();
+                    let closing: usize = match match_closing_paren(statement_string, 0) {
+                        Some(n) => n,
+                        None => {
+                            println!("no closing bracket found!");
+                            return ProgramState::new(vec![0; 512], 0);
+                        }
+                    };
+                    if closing == 0 {
+                        println!("no closing bracket found!");
+                        return ProgramState::new(vec![0; 512], 0);
                     }
+                    while new_state.get_current() != 0 {
+                        new_state = execute_statements(&new_statements[1..closing].to_vec(), &new_state);
+                    }
+                    let statements_left: Vec<char> = new_statements[closing..].to_vec();
+                    new_statements = vec![new_statements[0]];
+                    new_statements.extend(statements_left);
                 }
                 ']' => {
                     break;
