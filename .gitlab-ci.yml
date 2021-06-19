@@ -13,5 +13,6 @@ test:
   stage: test
   script:
     - cargo run -- -d test.bf
+    - cargo run -- -d helloworld.bf
 
 # vim: ts=2 sts=2 sw=2 expandtab

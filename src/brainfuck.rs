@@ -70,7 +70,11 @@ pub mod interpreter {
         }
 
         pub fn read_to_ptr(&mut self) {
-            // TODO: add stdin reading to here
+            let mut input: String = String::new();
+            let _res = io::stdin().read_line(&mut input);
+            let in_chars: Vec<char> = input.chars().collect();
+            let input_as_u8: u8 = in_chars[0] as u8;
+            self.mem[self.ptr] = input_as_u8;
         }
 
         pub fn get_current(&self) -> u8 {
@@ -148,6 +152,8 @@ pub mod cmd {
         options:
         -d, --debug: enable debugging output after running the programm
         -h, --help: show this help message
+        -v, --version: print the version number
     ";
+    pub const VERSION: &str = "brainfuck: v1.0.0";
 }
 // vim: ts=4 sts=4 sw=4 expandtab

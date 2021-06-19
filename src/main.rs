@@ -24,22 +24,32 @@ fn main() -> Result<(), Error> {
 			"-h" | "--help" => {
 				println!("{}", brainfuck::cmd::HELP);
 			}
+            "-v" | "--version" => {
+                println!("{}", brainfuck::cmd::VERSION);
+            }
             _ => {}
 		}
 	}
 
-    let fname: String = args.pop().unwrap();
-    let content: String = fs::read_to_string(fname.as_str())?;
-    let statements: Vec<char> = content.chars().collect();
-
-	let init_ptr: usize = 0;
-	let init_mem: Vec<u8> = vec![0; 16];
-    let state: ProgramState = ProgramState::new(init_mem, init_ptr);
-	let new_state = execute_statements(&statements, &state);
-    if debug {
-        dbg!(new_state);
+    let mut argclone: Vec<String> = args.clone();
+    let last_arg_chars: Vec<char> = argclone.pop().unwrap().chars().collect();
+    if last_arg_chars[0] == '-' {
+        return Ok(());
     }
-	Ok(())
+    else { 
+        let fname: String = args.pop().unwrap();
+        let content: String = fs::read_to_string(fname.as_str())?;
+        let statements: Vec<char> = content.chars().collect();
+
+	    let init_ptr: usize = 0;
+	    let init_mem: Vec<u8> = vec![0; 16];
+        let state: ProgramState = ProgramState::new(init_mem, init_ptr);
+	    let new_state = execute_statements(&statements, &state);
+        if debug {
+            dbg!(new_state);
+        }
+	    return Ok(());
+    }
 	
 }
 
