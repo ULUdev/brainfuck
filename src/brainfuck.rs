@@ -18,6 +18,7 @@ pub mod help {
 
 pub mod interpreter {
     pub use crate::brainfuck::help::match_closing_paren;
+    pub use std::io::{self, Write};
 
     #[derive(Debug, Clone)]
     pub struct ProgramState {
@@ -65,6 +66,7 @@ pub mod interpreter {
         pub fn print_from_ptr(&self) {
             let val: String = String::from_utf8(vec![self.mem[self.ptr]]).unwrap();
             print!("{}", val);
+            io::stdout().flush().unwrap();
         }
 
         pub fn read_to_ptr(&mut self) {
@@ -116,7 +118,13 @@ pub mod interpreter {
                     while new_state.get_current() != 0 {
                         new_state = execute_statements(&new_statements[1..closing].to_vec(), &new_state);
                     }
-                    let statements_left: Vec<char> = new_statements[closing..].to_vec();
+                    let mut statements_left: Vec<char> = Vec::new();
+                    if closing + 1 == new_statements.len() {
+                        statements_left = new_statements[closing..].to_vec();
+                    } else if closing + 1 < new_statements.len() {
+                        statements_left = new_statements[closing+1..].to_vec();
+                    }
+                    //let statements_left: Vec<char> = new_statements[closing+1..].to_vec();
                     new_statements = vec![new_statements[0]];
                     new_statements.extend(statements_left);
                 }
