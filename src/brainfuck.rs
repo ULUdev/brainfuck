@@ -24,11 +24,12 @@ pub mod interpreter {
     pub struct ProgramState {
         mem: Vec<u8>,
         ptr: usize,
+        inbuf: Vec<char>,
     }
 
     impl ProgramState {
         pub fn new(mem: Vec<u8>, ptr: usize) -> ProgramState {
-            ProgramState { mem, ptr }
+            ProgramState { mem, ptr, inbuf: Vec::new() }
         }
 
         pub fn incr_ptr(&mut self) {
@@ -70,11 +71,26 @@ pub mod interpreter {
         }
 
         pub fn read_to_ptr(&mut self) {
-            let mut input: String = String::new();
-            let _res = io::stdin().read_line(&mut input);
-            let in_chars: Vec<char> = input.chars().collect();
-            let input_as_u8: u8 = in_chars[0] as u8;
-            self.mem[self.ptr] = input_as_u8;
+            if self.inbuf.len() == 0 {
+                let mut input: String = String::new();
+                let _res = io::stdin().read_line(&mut input);
+                let in_chars: Vec<char> = input.chars().collect();
+                if in_chars.len() == 0 {
+                    return;
+                }
+                let input_as_u8: u8 = in_chars[0] as u8;
+                if in_chars.len() > 1 {
+                    let push_chars: Vec<char> = in_chars[1..].to_vec();
+                    for ch in push_chars {
+                        self.inbuf.push(ch);
+                    }
+                }
+                self.mem[self.ptr] = input_as_u8;
+            }
+            else {
+                self.mem[self.ptr] = self.inbuf[0] as u8;
+                self.inbuf.remove(0);
+            }
         }
 
         pub fn get_current(&self) -> u8 {
@@ -154,6 +170,6 @@ pub mod cmd {
         -h, --help: show this help message
         -v, --version: print the version number
     ";
-    pub const VERSION: &str = "brainfuck: v1.0.0";
+    pub const VERSION: &str = "brainfuck: v1.0.1";
 }
 // vim: ts=4 sts=4 sw=4 expandtab
