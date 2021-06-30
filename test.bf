@@ -1,1 +1,1 @@
-+++++++[>+++++++<-]>-. a comment to see if the interpreter cares about them
++++++++[>+++++++<->-. a comment to see if the interpreter cares about them

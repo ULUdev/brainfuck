@@ -41,9 +41,15 @@ fn main() -> Result<(), Error> {
         let content: String = fs::read_to_string(fname.as_str())?;
         let statements: Vec<char> = content.chars().collect();
 	    let init_ptr: usize = 0;
-	    let init_mem: Vec<u8> = vec![0; 16];
+	    let init_mem: Vec<u8> = vec![0; 512];
         let state: ProgramState = ProgramState::new(init_mem, init_ptr);
-	    let new_state = execute_statements(&statements, &state);
+	    let new_state = match execute_statements(&statements, &state) {
+            Ok(n) => n,
+            Err(e) => {
+                println!("error at runtime: {}", e);
+                return Err(Error::new(std::io::ErrorKind::Other, "error at runtime"));
+            }
+        };
         if debug {
             dbg!(new_state);
         }

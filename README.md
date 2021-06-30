@@ -4,10 +4,4 @@
 [![pipeline status](https://gitlab.sokoll.com/moritz/brainfuck/badges/master/pipeline.svg)](https://gitlab.sokoll.com/moritz/brainfuck/-/commits/master)
 
 This interpreter is a project of mine for learning rust.
-If I finish it, it will be uploaded to the AUR and possibly crates.io
-
-## Usage
-The last argument has to be a valid filename to use as an input file.
-### Options
-- `-d`, `--debug`: enable debug printing
-- `-h`, `--help`: show help message
+It is avaiable in the AUR as [brainfuck-interp](https://aur.archlinux.org/packages/brainfuck-interp)

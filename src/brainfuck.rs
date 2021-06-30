@@ -5,11 +5,15 @@ pub mod help {
         let mut counter: i32 = 1;
         let mut pos: usize = open_pos;
         while counter > 0 {
-            pos += 1;
-            match chars[pos] {
-                '[' => counter += 1,
-                ']' => counter -= 1,
-                _ => {}
+            if pos + 1 == chars.len() {
+                return None;
+            } else {
+                pos += 1;
+                match chars[pos] {
+                    '[' => counter += 1,
+                    ']' => counter -= 1,
+                    _ => {}
+                }
             }
         }
         Some(pos)
@@ -18,7 +22,12 @@ pub mod help {
 
 pub mod interpreter {
     pub use crate::brainfuck::help::match_closing_paren;
-    pub use std::io::{self, Write};
+    pub use std::io::{
+        self,
+        Write,
+        Error,
+        ErrorKind
+    };
 
     #[derive(Debug, Clone)]
     pub struct ProgramState {
@@ -98,7 +107,7 @@ pub mod interpreter {
         }
     }
 
-    pub fn execute_statements(statements: &Vec<char>, inital_state: &ProgramState) -> ProgramState {
+    pub fn execute_statements(statements: &Vec<char>, inital_state: &ProgramState) -> Result<ProgramState, Error> {
         let mut new_state: ProgramState = inital_state.clone();
         let mut new_statements: Vec<char> = statements.clone();
         while new_statements.len() != 0 {
@@ -127,16 +136,14 @@ pub mod interpreter {
                     let closing: usize = match match_closing_paren(statement_string, 0) {
                         Some(n) => n,
                         None => {
-                            println!("no closing bracket found!");
-                            return ProgramState::new(vec![0; 512], 0);
+                            return Err(Error::new(ErrorKind::Other, "no closing bracket found!"));
                         }
                     };
                     if closing == 0 {
-                        println!("no closing bracket found!");
-                        return ProgramState::new(vec![0; 512], 0);
+                        return Err(Error::new(ErrorKind::Other, "no closing bracket found!"));
                     }
                     while new_state.get_current() != 0 {
-                        new_state = execute_statements(&new_statements[1..closing].to_vec(), &new_state);
+                        new_state = execute_statements(&new_statements[1..closing].to_vec(), &new_state).unwrap();
                     }
                     let mut statements_left: Vec<char> = Vec::new();
                     if closing + 1 == new_statements.len() {
@@ -156,7 +163,7 @@ pub mod interpreter {
             new_statements.remove(0);
         }
 
-        new_state
+        Ok(new_state)
     }
 }
 
@@ -170,6 +177,6 @@ pub mod cmd {
         -h, --help: show this help message
         -v, --version: print the version number
     ";
-    pub const VERSION: &str = "brainfuck: v1.0.1";
+    pub const VERSION: &str = "brainfuck: v1.0.2";
 }
 // vim: ts=4 sts=4 sw=4 expandtab
