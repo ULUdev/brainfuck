@@ -22,12 +22,7 @@ pub mod help {
 
 pub mod interpreter {
     pub use crate::brainfuck::help::match_closing_paren;
-    pub use std::io::{
-        self,
-        Write,
-        Error,
-        ErrorKind
-    };
+    pub use std::io::{self, Error, ErrorKind, Write};
 
     #[derive(Debug, Clone)]
     pub struct ProgramState {
@@ -38,7 +33,11 @@ pub mod interpreter {
 
     impl ProgramState {
         pub fn new(mem: Vec<u8>, ptr: usize) -> ProgramState {
-            ProgramState { mem, ptr, inbuf: Vec::new() }
+            ProgramState {
+                mem,
+                ptr,
+                inbuf: Vec::new(),
+            }
         }
 
         pub fn incr_ptr(&mut self) {
@@ -95,8 +94,7 @@ pub mod interpreter {
                     }
                 }
                 self.mem[self.ptr] = input_as_u8;
-            }
-            else {
+            } else {
                 self.mem[self.ptr] = self.inbuf[0] as u8;
                 self.inbuf.remove(0);
             }
@@ -107,7 +105,10 @@ pub mod interpreter {
         }
     }
 
-    pub fn execute_statements(statements: &Vec<char>, inital_state: &ProgramState) -> Result<ProgramState, Error> {
+    pub fn execute_statements(
+        statements: &Vec<char>,
+        inital_state: &ProgramState,
+    ) -> Result<ProgramState, Error> {
         let mut new_state: ProgramState = inital_state.clone();
         let mut new_statements: Vec<char> = statements.clone();
         while new_statements.len() != 0 {
@@ -143,13 +144,15 @@ pub mod interpreter {
                         return Err(Error::new(ErrorKind::Other, "no closing bracket found!"));
                     }
                     while new_state.get_current() != 0 {
-                        new_state = execute_statements(&new_statements[1..closing].to_vec(), &new_state).unwrap();
+                        new_state =
+                            execute_statements(&new_statements[1..closing].to_vec(), &new_state)
+                                .unwrap();
                     }
                     let mut statements_left: Vec<char> = Vec::new();
                     if closing + 1 == new_statements.len() {
                         statements_left = new_statements[closing..].to_vec();
                     } else if closing + 1 < new_statements.len() {
-                        statements_left = new_statements[closing+1..].to_vec();
+                        statements_left = new_statements[closing + 1..].to_vec();
                     }
                     //let statements_left: Vec<char> = new_statements[closing+1..].to_vec();
                     new_statements = vec![new_statements[0]];
